@@ -15,23 +15,25 @@
         </div>
         <div class="justify-content-end" id="navbarSupportedContent">
             <ul class="navbar-nav">
+                <div class="form-inline">
                 <div class="d-flex justify-content-center">
     <form action="/foods" method="GET" class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
            </div>
+           
                     <% if(!currentuser){%>
                     <li class="nav-item">
-                 <a class="nav-link" href="/login">Login</a>
+                 <a class="nav-link text-warning" href="/login">Login</a>
             </li>
             <li class="nav-item">
-                 <a class="nav-link" href="/register">Signup</a>
+                 <a class="nav-link text-danger" href="/register">Signup</a>
             </li>
             <% }else{%>
             
             <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle text-warning" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
          welcome-<%=currentuser.username%>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -47,6 +49,7 @@
       </li>
             
             <% }%>
+            </div>
             </ul>
             </div>
             </div>
