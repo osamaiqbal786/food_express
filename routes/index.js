@@ -9,7 +9,11 @@ router.get("/register",function(req, res) {
 });
 
 router.post("/register",function(req, res) {
-   var newuser= new user({username: req.body.username});
+   var newuser= new user({username: req.body.username,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        email: req.body.email,
+       contact:req.body.contact});
    user.register(newuser,req.body.password, function(err,user){
       if(err){
           
@@ -54,7 +58,12 @@ router.get("/adminregister",middleware.isauthorised,function(req, res) {
 
 
 router.post("/adminregister",middleware.isauthorised,function(req, res) {
-   var newuser= new user({username: req.body.username, isadmin:"true"});
+   var newuser= new user({username: req.body.username,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        email: req.body.email,
+        contact:req.body.contact, 
+        isadmin:"true"});
    user.register(newuser,req.body.password, function(err,user){
       if(err){
           
@@ -67,7 +76,8 @@ router.post("/adminregister",middleware.isauthorised,function(req, res) {
         //  res.redirect("/foods");
          
         // });
-       
+        req.flash("success","admin created");
+       res.redirect("/foods");
      
    });
 });

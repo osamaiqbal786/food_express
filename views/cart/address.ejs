@@ -10,6 +10,9 @@
           <div class="row">
    
 <div class="col-md-4">
+    <form action="/<%=currentuser._id%>/cart/checkout/newaddress" method="get">
+    <button class="btn btn-warning">Add new address</button>
+</form>
 <form action="/<%=currentuser._id%>/cart/checkout/order" method="post" onsubmit="return ischecked()">
     <div class="row">
         <div class="col-md-12">
@@ -23,9 +26,6 @@
 </div>
 </div>
 <div>
-<form action="/<%=currentuser._id%>/cart/checkout/newaddress" method="get">
-    <button class="btn btn-warning">Add new address</button>
-</form>
 </div>
 
 <hr>

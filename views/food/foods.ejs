@@ -26,10 +26,12 @@
    <% food.forEach(function(food){ %>
    <% if(food.type==="veg"){ %>
     <div class="col-md-3 col-sm-6">
-        <div class="img-thumbnail">
+        <div class="img-fluid img-thumbnail">
             <img  src="<%=food.image%>"class="img-fluid" alt="Responsive image">
             <div class="caption">
             <h6><a href="/foods/<%= food._id %>" class="text-muted"><%=food.name%></a></h6>
+           <p><a href="/foods/<%= food._id %>" class="btn btn-outline-success btn-block">VIEW MORE</a></p> 
+            
             </div>
         </div>
         

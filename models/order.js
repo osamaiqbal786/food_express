@@ -4,6 +4,9 @@ var orderschema= new mongoose.Schema({
    
         address:[{}],
         payment:[{}],
+        firstname:[{}],
+        lastname:[{}],
+        contact:[{}],
         name:[{}],
         price:[{}],
         peice:[{}],

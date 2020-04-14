@@ -5,6 +5,10 @@ var userschema= new mongoose.Schema({
    
    username:String,
    password:String,
+   firstname:String,
+   lastname:String,
+   email:String,
+   contact:String,
    isadmin: {type: Boolean, default: false},
       cart:[
         {

@@ -7,7 +7,6 @@
             <h4>Will be delivered within 2 hour! enjoy your meal!!</h4>
         </div>
     
-    
  <div class="row"style="display:flex; flex-wrap: wrap; padding:10px 0">
       <% order.image.forEach(function(image){ %>
     <div class="col-md-2">
@@ -41,8 +40,17 @@
          <% }); %>
 
          </div>
+          <div class="row">
+           <p><strong>Name-</strong><%=order.firstname%>&nbsp;&nbsp;<%=order.lastname%></p> 
+        </div>
         <div class="row">
             <p><strong>Address-</strong><%=order.address%>.</p>
+        </div>
+        <div class="row">
+            <p><strong>Contact-</strong><%=order.contact%>.</p>
+        </div>
+        <div class="row">
+           <p><strong>Payment type-</strong><%=order.payment%></p> 
         </div>
 <hr>
 <% }); %>

@@ -62,7 +62,6 @@ router.delete("/:id/cart/:cart_id",middleware.isloggedin, function(req, res){
       if(err){
           res.redirect( "/"+req.params.id+"/cart");
       } else{
-        //   req.flash("success","comment deleted successfully");
          res.redirect("/"+ req.params.id+"/cart"); 
       }
    }); 
@@ -130,6 +129,15 @@ router.get("/:id/order",middleware.isloggedin ,function(req, res) {
    
 });
 
+
+router.get("/:id/confirm",middleware.isloggedin ,function(req, res) {
+    req.flash("success","order placed successfully");
+    res.redirect("/"+req.params.id+"/order")
+   
+});
+
+
+
 router.post("/:id/cart/checkout/order",middleware.isloggedin,function(req, res){
    user.findById(req.params.id).populate("cart").exec(function(err, user) {
       if(err){
@@ -141,6 +149,9 @@ router.post("/:id/cart/checkout/order",middleware.isloggedin,function(req, res){
              if(err){
                  console.log(err);
              } else{
+                 order.firstname.push(user.firstname);
+                 order.lastname.push(user.lastname);
+                 order.contact.push(user.contact);
                  user.cart.forEach(function(cart){
                 //  order.obj.id=cart.obj.id;
                  order.name.push(cart.obj.name);
@@ -168,7 +179,7 @@ router.post("/:id/cart/checkout/order",middleware.isloggedin,function(req, res){
      
    });
    
-   res.redirect("/"+req.params.id+"/order")
+   res.redirect("/"+req.params.id+"/confirm")
 });
 
 
