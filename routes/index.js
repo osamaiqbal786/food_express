@@ -82,7 +82,11 @@ router.post("/adminregister",middleware.isauthorised,function(req, res) {
    });
 });
 
-
-
+router.get("/team",function(req, res) {
+    res.render("teams");
+})
+router.get("/contact",function(req, res) {
+    res.render("contact");
+})
 
 module.exports= router;
