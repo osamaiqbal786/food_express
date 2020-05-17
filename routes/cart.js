@@ -211,7 +211,7 @@ router.get("/:id/cart/payment/paytm/:total/:address/:oid",(req,res)=>{
         params['ORDER_ID'] = ''+(user.username).toUpperCase()+'ORD'+req.params.oid+'',
         params['CUST_ID'] = req.params.id,
         params['TXN_AMOUNT'] = req.params.total,
-        params['CALLBACK_URL'] = 'https://69eeafde53df4940b2ad448653087845.vfs.cloud9.us-east-2.amazonaws.com/'+req.user._id+'/cart/checkout/order/'+req.params.address+'/'+type+'/'+req.params.oid,
+        params['CALLBACK_URL'] = 'https://powerful-cliffs-44698.herokuapp.com/'+req.user._id+'/cart/checkout/order/'+req.params.address+'/'+type+'/'+req.params.oid,
         params['EMAIL'] = 'xyz@gmail.com',
         params['MOBILE_NO'] = '8882085557'
 
