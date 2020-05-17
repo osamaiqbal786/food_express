@@ -7,7 +7,8 @@ var address= require("../models/address");
 var order= require("../models/order");
 var middleware= require("../middleware");
 var MongoClient = require('mongodb').MongoClient;
-const checksum_lib = require('../paytm/checksum/checksum')
+const checksum_lib = require('../paytm/checksum/checksum');
+const https = require('https');
 var url ="mongodb+srv://osamaiqbal786:osama786@cluster0-2683c.mongodb.net/food_express?retryWrites=true&w=majority";
 
 
@@ -140,11 +141,52 @@ router.get("/:id/confirm",middleware.isloggedin ,function(req, res) {
 
 
 router.post("/:id/cart/checkout/order/:address/:type/:oid",middleware.isloggedin,function(req, res){
-   user.findById(req.params.id).populate("address").populate("cart").exec(function(err, user) {
+    if(req.params.type==="debit-credit"){
+    var paytmParams = {};
+    var status;
+
+paytmParams["MID"] = "jcvTmU84910526732570";
+
+paytmParams["ORDERID"] = (req.user.username).toUpperCase()+"ORD"+req.params.oid;
+
+checksum_lib.genchecksum(paytmParams, "0HVvh!GMGRXEJARa", function(err, checksum){
+if(err){
+    console.log(err)
+}else{
+    
+    paytmParams["CHECKSUMHASH"] = checksum;
+
+    var post_data = JSON.stringify(paytmParams);
+
+    var options = {
+
+        hostname: 'securegw-stage.paytm.in',
+        port: 443,
+        path: '/order/status',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': post_data.length
+        }
+    };
+
+    var response = "";
+    var post_req = https.request(options, function(post_res) {
+        post_res.on('data', function (chunk) {
+            response += chunk;
+        });
+
+        post_res.on('end', function(){
+            var obj=JSON.parse(response)
+            status=obj.STATUS
+            
+            
+            if(status==="TXN_FAILURE"){
+    user.findById(req.params.id).populate("address").populate("cart").exec(function(err, user) {
       if(err){
           console.log(err);
       } else{
-          var x=0;var y="";var add;var typ;
+          var x=0;var y="";var add;var typ="Debit/Credit Card Payment";var pstatus="failed";
           user.address.forEach(function(addres){
               x=x+1;
               
@@ -152,12 +194,10 @@ router.post("/:id/cart/checkout/order/:address/:type/:oid",middleware.isloggedin
               add= y.concat(addres.address,addres.address2,addres.city,addres.state,addres.zip)
               }
           })
-        if(req.params.type==="debit-credit"){
-          typ="Debit/Credit Card Payment"  
-        }else{
-            typ="Cash On Delivery"
-        }
-              address={address:add,payment:typ,oid:req.params.oid}
+        
+            
+            
+              address={address:add,payment:typ,oid:req.params.oid,pstatus:pstatus}
           order.create(address,function(err,order){
              if(err){
                  console.log(err);
@@ -190,13 +230,130 @@ router.post("/:id/cart/checkout/order/:address/:type/:oid",middleware.isloggedin
         // res.redirect("/"+req.params.id+"/order")  
       }
      
-   });
+  });
+   req.flash("error","Transaction Failed");
+  res.redirect("/"+req.user._id+"/cart")
+}else{
+    user.findById(req.params.id).populate("address").populate("cart").exec(function(err, user) {
+      if(err){
+          console.log(err);
+      } else{
+          var x=0;var y="";var add;var typ="Debit/Credit Card Payment";var pstatus="success";
+          user.address.forEach(function(addres){
+              x=x+1;
+              
+              if(req.params.address===x.toString()){
+              add= y.concat(addres.address,addres.address2,addres.city,addres.state,addres.zip)
+              }
+          })
+        
+            
+            
+              address={address:add,payment:typ,oid:req.params.oid,pstatus:pstatus}
+          order.create(address,function(err,order){
+             if(err){
+                 console.log(err);
+             } else{
+                 order.firstname.push(user.firstname);
+                 order.lastname.push(user.lastname);
+                 order.contact.push(user.contact);
+                 user.cart.forEach(function(cart){
+                //  order.obj.id=cart.obj.id;
+                 order.name.push(cart.obj.name);
+                 order.price.push(cart.obj.price);
+                 order.peice.push(cart.peice);
+                 order.image.push(cart.obj.image);
+                 
+                  });
+                  order.save();
+                  user.order.push(order);
+                  user.save(function(err){
+                     if(err){
+                         console.log(err)
+                     }
+                 });
+                 
+             }
+              
+          });
+       
+        
+
+        // res.redirect("/"+req.params.id+"/order")  
+      }
+     
+  });
    
-   res.redirect("/"+req.params.id+"/confirm")
+  res.redirect("/"+req.params.id+"/confirm")
+}
+            
+            
+            
+        });
+    });
+    post_req.write(post_data);
+    post_req.end();
+}
 });
 
 
-router.get("/:id/cart/payment/paytm/:total/:address/:oid",(req,res)=>{
+}else{
+  user.findById(req.params.id).populate("address").populate("cart").exec(function(err, user) {
+      if(err){
+          console.log(err);
+      } else{
+          var x=0;var y="";var add;var typ="Cash On Delivery";var pstatus="success"
+          user.address.forEach(function(addres){
+              x=x+1;
+              
+              if(req.params.address===x.toString()){
+              add= y.concat(addres.address,addres.address2,addres.city,addres.state,addres.zip)
+              }
+          })
+        
+            
+            
+              address={address:add,payment:typ,oid:req.params.oid,pstatus:pstatus}
+          order.create(address,function(err,order){
+             if(err){
+                 console.log(err);
+             } else{
+                 order.firstname.push(user.firstname);
+                 order.lastname.push(user.lastname);
+                 order.contact.push(user.contact);
+                 user.cart.forEach(function(cart){
+                //  order.obj.id=cart.obj.id;
+                 order.name.push(cart.obj.name);
+                 order.price.push(cart.obj.price);
+                 order.peice.push(cart.peice);
+                 order.image.push(cart.obj.image);
+                 
+                  });
+                  order.save();
+                  user.order.push(order);
+                  user.save(function(err){
+                     if(err){
+                         console.log(err)
+                     }
+                 });
+                 
+             }
+              
+          });
+       
+        
+
+        // res.redirect("/"+req.params.id+"/order")  
+      }
+     
+  });
+   
+  res.redirect("/"+req.params.id+"/confirm")
+}
+});
+
+
+router.get("/:id/cart/payment/paytm/:total/:address/:oid",middleware.isloggedin,(req,res)=>{
     user.findById(req.params.id,function(err, user) {
         if(err){
             console.log(err)
@@ -213,7 +370,7 @@ router.get("/:id/cart/payment/paytm/:total/:address/:oid",(req,res)=>{
         params['TXN_AMOUNT'] = req.params.total,
         params['CALLBACK_URL'] = 'https://powerful-cliffs-44698.herokuapp.com/'+req.user._id+'/cart/checkout/order/'+req.params.address+'/'+type+'/'+req.params.oid,
         params['EMAIL'] = 'xyz@gmail.com',
-        params['MOBILE_NO'] = '8882085557'
+        params['MOBILE_NO'] = user.contact,
 
         checksum_lib.genchecksum(params,'0HVvh!GMGRXEJARa',function(err,checksum){
             if(err){

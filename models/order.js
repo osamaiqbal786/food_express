@@ -3,6 +3,7 @@ var mongoose=require("mongoose");
 var orderschema= new mongoose.Schema({
         
         oid:[{}],
+        pstatus:[{}],
         address:[{}],
         payment:[{}],
         firstname:[{}],
