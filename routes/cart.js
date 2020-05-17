@@ -7,6 +7,7 @@ var address= require("../models/address");
 var order= require("../models/order");
 var middleware= require("../middleware");
 var MongoClient = require('mongodb').MongoClient;
+const checksum_lib = require('../paytm/checksum/checksum')
 var url ="mongodb+srv://osamaiqbal786:osama786@cluster0-2683c.mongodb.net/food_express?retryWrites=true&w=majority";
 
 
@@ -68,7 +69,7 @@ router.delete("/:id/cart/:cart_id",middleware.isloggedin, function(req, res){
 });
 
 router.get("/:id/cart/checkout/address",middleware.isloggedin ,function(req, res) {
-     user.findById(req.user._id).populate("address").populate("cart").exec(function(err,useraddress){
+     user.findById(req.user._id).populate("order").populate("address").populate("cart").exec(function(err,useraddress){
          if(err){
              console.log(err);
          }else{
@@ -138,14 +139,26 @@ router.get("/:id/confirm",middleware.isloggedin ,function(req, res) {
 
 
 
-router.post("/:id/cart/checkout/order",middleware.isloggedin,function(req, res){
-   user.findById(req.params.id).populate("cart").exec(function(err, user) {
+router.post("/:id/cart/checkout/order/:address/:type/:oid",middleware.isloggedin,function(req, res){
+   user.findById(req.params.id).populate("address").populate("cart").exec(function(err, user) {
       if(err){
           console.log(err);
       } else{
-        
-             
-          order.create(req.body.address,function(err,order){
+          var x=0;var y="";var add;var typ;
+          user.address.forEach(function(addres){
+              x=x+1;
+              
+              if(req.params.address===x.toString()){
+              add= y.concat(addres.address,addres.address2,addres.city,addres.state,addres.zip)
+              }
+          })
+        if(req.params.type==="debit-credit"){
+          typ="Debit/Credit Card Payment"  
+        }else{
+            typ="Cash On Delivery"
+        }
+              address={address:add,payment:typ,oid:req.params.oid}
+          order.create(address,function(err,order){
              if(err){
                  console.log(err);
              } else{
@@ -181,6 +194,65 @@ router.post("/:id/cart/checkout/order",middleware.isloggedin,function(req, res){
    
    res.redirect("/"+req.params.id+"/confirm")
 });
+
+
+router.get("/:id/cart/payment/paytm/:total/:address/:oid",(req,res)=>{
+    user.findById(req.params.id,function(err, user) {
+        if(err){
+            console.log(err)
+        }else{
+      
+    var type="debit-credit"
+        let params ={}
+        params['MID'] = 'jcvTmU84910526732570',
+        params['WEBSITE'] = 'WEBSTAGING',
+        params['CHANNEL_ID'] = 'WEB',
+        params['INDUSTRY_TYPE_ID'] = 'Retail',
+        params['ORDER_ID'] = ''+(user.username).toUpperCase()+'ORD'+req.params.oid+'',
+        params['CUST_ID'] = req.params.id,
+        params['TXN_AMOUNT'] = req.params.total,
+        params['CALLBACK_URL'] = 'https://69eeafde53df4940b2ad448653087845.vfs.cloud9.us-east-2.amazonaws.com/'+req.user._id+'/cart/checkout/order/'+req.params.address+'/'+type+'/'+req.params.oid,
+        params['EMAIL'] = 'xyz@gmail.com',
+        params['MOBILE_NO'] = '8882085557'
+
+        checksum_lib.genchecksum(params,'0HVvh!GMGRXEJARa',function(err,checksum){
+            if(err){
+                console.log(err)
+            }else{
+               let txn_url = "https://securegw-stage.paytm.in/order/process"
+
+            let form_fields = ""
+            for(var x in params)
+            {
+                form_fields += "<input type='hidden' name='"+x+"' value='"+params[x]+"'/>"
+
+            }
+
+            form_fields+="<input type='hidden' name='CHECKSUMHASH' value='"+checksum+"' />"
+
+            var html = '<html><body><center><h1>Please wait! Do not refresh the page</h1></center><form method="post" action="'+txn_url+'" name="f1">'+form_fields +'</form><script type="text/javascript">document.f1.submit()</script></body></html>'
+            res.writeHead(200,{'Content-Type' : 'text/html'})
+            res.write(html)
+            res.end() 
+            }
+            
+        })
+              
+        }
+    })
+    })
+
+
+
+router.post("/:id/cart/validate/order/:total/:oid",middleware.isloggedin,function(req, res){
+    if(req.body.address.payment==="cash on delivery"){
+        res.redirect(307,"/"+req.params.id+"/cart/checkout/order/"+req.body.address.address+"/"+req.body.address.payment+"/"+req.params.oid)
+    }else{
+      
+        res.redirect("/"+req.params.id+"/cart/payment/paytm/"+req.params.total+"/"+req.body.address.address+"/"+req.params.oid)
+    }
+})
+
 
 
 router.get("/:id/adminorder",middleware.isauthorised,function(req, res) {

@@ -1,9 +1,12 @@
 <%- include ('../partials/header')%>
 
-<%var total=0;%>
+<%var total=0;var x =0;var oid=0%>
 <% user.cart.forEach(function(cart){ %>
    <%total=total+(parseInt(cart.obj.price)*parseInt(cart.peice))%>
 <% }); %>
+<%oid=user.order.length%>
+
+
 <div class="container">
     <div class="row">
         <div class="col-md-8">
@@ -13,13 +16,13 @@
     <form action="/<%=currentuser._id%>/cart/checkout/newaddress" method="get">
     <button class="btn btn-warning">Add new address</button>
 </form>
-<form action="/<%=currentuser._id%>/cart/checkout/order" method="post" onsubmit="return ischecked()">
+<form action="/<%=currentuser._id%>/cart/validate/order/<%=total%>/<%=oid%>" method="post" onsubmit="return ischecked()">
     <div class="row">
         <div class="col-md-12">
         <h2 class="text-info">ADDRESS</h2>
     <% user.address.forEach(function(address){ %>
     <div class="form-check" id="inline">
-  <input class="form-check-input" type="radio" name="address[address]" id="inlineRadio1" value="<%=address.address%><%=address.address2%><%=address.city%><%=address.state%><%=address.zip%>" required>
+  <input class="form-check-input" type="radio" name="address[address]" id="inlineRadio1" value="<%=x=x+1%>" required>
   <label class="form-check-label" for="inlineRadio1"><%=address.address%><br><%=address.address2%><br><%=address.city%><br><%=address.state%><br><%=address.zip%><br></label>
 </div>
 <% }); %>
@@ -35,6 +38,11 @@
 <div class="form-check" id="inline">
   <input class="form-check-input" type="radio" name="address[payment]" id="inlineRadio2" value="cash on delivery" required>
   <label class="form-check-label" for="inlineRadio2">Cash on delivery</label>
+</div>
+<hr>
+<div class="form-check" id="inline">
+  <input class="form-check-input" type="radio" name="address[payment]" id="inlineRadio2" value="Debit/Credit Card Payments" required>
+  <label class="form-check-label" for="inlineRadio2">Debit/Credit Card Payments</label>
 </div>
 </div>
 </div>

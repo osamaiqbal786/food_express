@@ -27,7 +27,12 @@ mongoose.connect('mongodb+srv://osamaiqbal786:osama786@cluster0-2683c.mongodb.ne
 app.use(bodyparser.urlencoded({extended: true}));
 app.set("view engine","ejs");
 mongoose.set('useFindAndModify', false);
+
+
 app.use(express.static(__dirname + "/public"));
+
+
+
 // seeddb();
 app.use(methodoverride("_method"));
 app.use(flash());

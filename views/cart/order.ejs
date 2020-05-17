@@ -3,6 +3,7 @@
 <% if(user.order.length<1){%>
 <div class="container text-center"style="padding:200px 40px">
    <h4>No orders here see you soon</h4> 
+   <a href="/foods" class="btn btn-warning">Place Order</a>
 </div>
 <% } %>
 
@@ -12,7 +13,11 @@
     <div class="row">
             <h4>Will be delivered within 2 hour! enjoy your meal!!</h4>
         </div>
-    
+    <div class="row">
+          <% order.oid.forEach(function(oid){ %>
+            <p id="inline"><strong>Order id -</strong><%=(user.username).toUpperCase()%>ORD<%=oid%></p>
+            <% }); %>
+       </div> 
     
  <div class="row"style="display:flex; flex-wrap: wrap; padding:10px 0">
       <% order.image.forEach(function(image){ %>

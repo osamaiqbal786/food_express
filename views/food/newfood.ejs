@@ -2,27 +2,27 @@
 <div id="allingment">
 <div class="container">
     <div class="row">
-        <div style="width:30%; margin:0 auto;">
-        <h2>Add new campground</h2>
-    <form action="/foods" method="post">
+        <div style="width:60%; margin:0 auto;">
+        <h2>Add new food</h2>
+    <form action="/foods" method="post" enctype="multipart/form-data">
          <div class="form-group">
-        <input class="form-control" type="text" name="name" placeholder="food name">
+        <input class="form-control" type="text" name="food[name]" placeholder="food name">
         </div>
         <div class="form-group">
-        <input class="form-control" type="number" name="price" placeholder="price" min="0.01" step="0.01">
+        <input class="form-control" type="number" name="food[price]" placeholder="price" min="0.01" step="0.01">
         </div>
          <div class="form-group">
-      <select id="inputState" class="form-control" name="type">
+      <select id="inputState" class="form-control" name="food[type]">
         <option selected>Select type</option>
         <option>Non veg</option>
         <option>veg</option>
       </select>
     </div>
+                     <div class="form-group">
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                </div>
          <div class="form-group">
-        <input class="form-control" type="text" name="image" placeholder="image url">
-        </div>
-         <div class="form-group">
-        <input class="form-control" type="text" name="description" placeholder="description">
+        <input class="form-control" type="text" name="food[description]" placeholder="description">
         </div>
         <div class="form-group">
             <button class="btn btn-lg btn-primary btn-block">submit</button>

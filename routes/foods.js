@@ -2,6 +2,27 @@ var express= require("express");
 var router= express.Router();
 var food=require("../models/food");
 var middleware= require("../middleware");
+var multer = require('multer');
+var storage = multer.diskStorage({
+  filename: function(req, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  }
+});
+var imageFilter = function (req, file, cb) {
+    // accept image files only
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+        return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+};
+var upload = multer({ storage: storage, fileFilter: imageFilter})
+
+var cloudinary = require('cloudinary');
+cloudinary.config({ 
+  cloud_name: 'djweoyvdx', 
+  api_key:862965739664757, 
+  api_secret: 'LE20IJzelodOHiKR092XiQmCBNw'
+});
 
 
 router.get("/",function(req,res){
@@ -51,14 +72,16 @@ router.get("/foods/new",middleware.isauthorised,function(req, res) {
    res.render("food/newfood"); 
 });
 
-router.post("/foods",function(req, res){
-    var name=req.body.name;
-    var price=req.body.price;
-    var type=req.body.type;
-    var image=req.body.image;
-    var desc=req.body.description;
-    var newfood={name: name, price:price, type:type, image: image, description: desc};
-    food.create(newfood, function(err,newfoods){
+router.post("/foods", upload.single('image'),middleware.isauthorised,function(req, res){
+     cloudinary.uploader.upload(req.file.path, function(result) {
+  req.body.food.image = result.secure_url;
+  
+    // var name=req.body.name;
+    // var price=req.body.price;
+    // var type=req.body.type;
+    // var desc=req.body.description;
+    // var newfood={name: name, price:price, type:type, image: image, description: desc};
+    food.create(req.body.food, function(err,newfoods){
        if(err){
            console.log(err);
        } else{
@@ -66,6 +89,7 @@ router.post("/foods",function(req, res){
            res.redirect("/foods");
        }
     });
+});
 });
     
 router.get("/foods/:id",function(req, res) {
@@ -92,7 +116,9 @@ router.get("/foods/:id/edit",middleware.isauthorised, function(req, res) {
     
 });
 
-router.put("/foods/:id",middleware.isauthorised,function(req, res){
+router.put("/foods/:id", upload.single('image'),middleware.isauthorised,function(req, res){
+    cloudinary.uploader.upload(req.file.path, function(result) {
+  req.body.food.image = result.secure_url;
     food.findByIdAndUpdate(req.params.id,req.body.food, function(err, updatedfood){
       if(err){
        res.redirect("/foods")
@@ -102,6 +128,7 @@ router.put("/foods/:id",middleware.isauthorised,function(req, res){
         }  
     });
    
+});
 });
 
 router.delete("/foods/:id",middleware.isauthorised, function(req, res){
