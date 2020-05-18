@@ -5,10 +5,12 @@
     <div class="row"style="padding: 40px 0;">
         <div class="col-md-5">
             <p><h4><a class="text-danger" href="#"><%= food.name%></a></h4></p>
-           
-            <h5 class="text-muted"><%=food.type%></h5>
-            
+           <p class="text-muted"><strong>serving size-</strong>2-4 Person</p>
+            <h5 class="text-success"><%=food.type%></h5>
+            <h5 class="text-warning"><strong>Ingredients</strong></h5>
             <p><%=food.description%></p>
+            <h5>Recipe</h5>
+            <p><%=food.recipe%></p>
             <h5>Rs-<%=food.price%>/peice</h5>
             <form action="/foods/<%=food._id%>/new/cart" method="post">
                 <div class="form-group">

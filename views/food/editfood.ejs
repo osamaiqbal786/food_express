@@ -4,7 +4,7 @@
     <div class="row">
         <div style="width:30%; margin:0 auto;">
         <h2>Add new campground</h2>
-    <form action="/foods/<%= food._id%>/?_method=PUT" method="post" enctype="multipart/form-data">
+    <form action="/foods/<%= food._id%>/?_method=PUT" method="post">
          <div class="form-group">
         <input class="form-control" type="text" name="food[name]" value="<%=food.name%>">
         </div>
@@ -18,11 +18,14 @@
         <option>veg</option>
       </select>
     </div>
-          <div class="form-group">
-                    <input type="file" id="image" name="image" accept="image/*" required>
-                </div>
          <div class="form-group">
-        <input class="form-control" type="text" name="food[description]" value="<%=food.description%>">
+        <input class="form-control" type="text" name="food[image]" value="<%=food.image%>">
+        </div>
+         <div class="form-group">
+             <textarea class="form-control" type="textarea" name="food[description]"><%=food.description%></textarea>
+        </div>
+        <div class="form-group">
+             <textarea class="form-control" type="textarea" name="food[recipe]"><%=food.recipe%></textarea>
         </div>
         <div class="form-group">
             <button class="btn btn-lg btn-primary btn-block">submit</button>

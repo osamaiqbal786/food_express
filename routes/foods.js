@@ -116,9 +116,8 @@ router.get("/foods/:id/edit",middleware.isauthorised, function(req, res) {
     
 });
 
-router.put("/foods/:id", upload.single('image'),middleware.isauthorised,function(req, res){
-    cloudinary.uploader.upload(req.file.path, function(result) {
-  req.body.food.image = result.secure_url;
+router.put("/foods/:id",middleware.isauthorised,function(req, res){
+    
     food.findByIdAndUpdate(req.params.id,req.body.food, function(err, updatedfood){
       if(err){
        res.redirect("/foods")
@@ -128,7 +127,6 @@ router.put("/foods/:id", upload.single('image'),middleware.isauthorised,function
         }  
     });
    
-});
 });
 
 router.delete("/foods/:id",middleware.isauthorised, function(req, res){
